@@ -22,9 +22,14 @@ export function BuilderForm({ id, values }: Props) {
     <form
       action={async (fd) => {
         setSaving(true);
-        await saveInvitationAction(id, fd);
-        setSaving(false);
-        toast.success("Tersimpan");
+        try {
+          await saveInvitationAction(id, fd);
+          toast.success("Tersimpan");
+        } catch {
+          toast.error("Gagal menyimpan, coba lagi.");
+        } finally {
+          setSaving(false);
+        }
       }}
       className="grid gap-6"
     >
