@@ -13,18 +13,18 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setLoading(true);
     const fd = new FormData(e.currentTarget);
     const email = String(fd.get("email"));
     const password = String(fd.get("password"));
     const name = String(fd.get("name") ?? "");
-    const res =
-      mode === "register"
-        ? await signUp.email({ email, password, name })
-        : await signIn.email({ email, password });
-    setLoading(false);
-    if (res.error) return toast.error(res.error.message ?? "Gagal masuk");
-    router.push("/dashboard");
+    setLoading(true);
+    try {
+      const res = mode === "register" ? await signUp.email({ email, password, name }) : await signIn.email({ email, password });
+      if (res.error) { toast.error(res.error.message ?? (mode === "register" ? "Gagal daftar" : "Gagal masuk")); return; }
+      router.push("/dashboard");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
