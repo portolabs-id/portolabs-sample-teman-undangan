@@ -20,7 +20,7 @@ export type InvitationView = {
 };
 
 export function mediaUrl(key: string): string {
-  return `/api/media/${key}`;
+  return `/api/media/${encodeURIComponent(key)}`;
 }
 
 export function toInvitationView(inv: Invitation, photos: Photo[]): InvitationView {

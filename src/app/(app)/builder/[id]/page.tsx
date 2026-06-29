@@ -1,14 +1,23 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { eq } from "drizzle-orm";
 import { requireUser } from "@/lib/auth/server";
 import { getInvitationForOwner } from "@/lib/invitations/queries";
+import { getDb } from "@/lib/db";
+import { photos as photosTable } from "@/lib/db/schema";
+import { mediaUrl } from "@/lib/invitations/view-model";
 import { BuilderForm } from "./builder-form";
+import { GalleryManager } from "./gallery-manager";
 
 export default async function BuilderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await requireUser();
   const inv = await getInvitationForOwner(user.id, id);
   if (!inv) notFound();
+
+  const db = await getDb();
+  const pics = await db.select().from(photosTable).where(eq(photosTable.invitationId, id));
+  const galleryPics = pics.sort((a, b) => a.order - b.order).map((p) => ({ id: p.id, url: mediaUrl(p.r2Key) }));
 
   const values: Record<string, string> = {
     template: inv.template,
@@ -29,6 +38,7 @@ export default async function BuilderPage({ params }: { params: Promise<{ id: st
         </div>
       </div>
       <BuilderForm id={id} values={values} />
+      <GalleryManager id={id} photos={galleryPics} />
     </div>
   );
 }
