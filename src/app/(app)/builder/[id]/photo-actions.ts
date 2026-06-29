@@ -28,13 +28,19 @@ export async function uploadPhotoAction(id: string, formData: FormData) {
 
   const key = mediaKey(id, ext);
   await putPhoto(key, await file.arrayBuffer(), file.type);
-  await db.insert(photos).values({
-    id: crypto.randomUUID(),
-    invitationId: id,
-    r2Key: key,
-    order: existing.length,
-    createdAt: Date.now(),
-  });
+  try {
+    await db.insert(photos).values({
+      id: crypto.randomUUID(),
+      invitationId: id,
+      r2Key: key,
+      order: existing.length,
+      createdAt: Date.now(),
+    });
+  } catch (err) {
+    // Roll back the R2 write so a failed insert doesn't orphan the object.
+    await deletePhoto(key).catch(() => {});
+    throw err;
+  }
   revalidatePath(`/builder/${id}`);
 }
 
