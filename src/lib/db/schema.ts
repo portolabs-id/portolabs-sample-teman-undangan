@@ -46,3 +46,5 @@ export const rsvps = sqliteTable("rsvps", {
 export type Invitation = typeof invitations.$inferSelect;
 export type Photo = typeof photos.$inferSelect;
 export type Rsvp = typeof rsvps.$inferSelect;
+
+export * from "./auth.schema";
