@@ -38,7 +38,7 @@ export function toInvitationView(inv: Invitation, photos: Photo[]): InvitationVi
     venueAddress: inv.venueAddress,
     mapsUrl: inv.mapsUrl,
     coverUrl: inv.coverPhotoKey ? mediaUrl(inv.coverPhotoKey) : null,
-    gallery: photos.sort((a, b) => a.order - b.order).map((p) => mediaUrl(p.r2Key)),
+    gallery: [...photos].sort((a, b) => a.order - b.order).map((p) => mediaUrl(p.r2Key)),
     hasGift: Boolean(inv.giftAccountNumber),
     gift: { bankName: inv.giftBankName, accountNumber: inv.giftAccountNumber, accountHolder: inv.giftAccountHolder },
   };
