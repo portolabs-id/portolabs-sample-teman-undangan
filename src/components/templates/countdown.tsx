@@ -11,7 +11,7 @@ export function Countdown({ targetMs }: { targetMs: number }) {
   const c = countdownParts(targetMs, now);
   const cell = (n: number, l: string) => (
     <div className="flex flex-col items-center rounded-lg bg-black/5 px-3 py-2">
-      <span className="text-2xl font-bold tabular-nums">{String(n).padStart(2, "0")}</span>
+      <span className="text-2xl font-bold tabular-nums" suppressHydrationWarning>{String(n).padStart(2, "0")}</span>
       <span className="text-xs uppercase tracking-wide">{l}</span>
     </div>
   );

@@ -11,6 +11,8 @@ export function Events({ view }: { view: InvitationView }) {
     { label: "Resepsi", at: view.resepsiAt },
   ].filter((e) => e.at) as { label: string; at: number }[];
 
+  if (items.length === 0) return null;
+
   return (
     <section className="mx-auto grid max-w-2xl gap-6 px-6 py-16 text-center">
       <h2 className="font-serif text-3xl">Acara</h2>

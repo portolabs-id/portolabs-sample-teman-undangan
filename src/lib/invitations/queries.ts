@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { and, eq, desc } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { invitations, photos, type Invitation } from "@/lib/db/schema";
@@ -56,7 +57,7 @@ export async function setStatus(userId: string, invId: string, status: "draft" |
     .where(and(eq(invitations.id, invId), eq(invitations.userId, userId)));
 }
 
-export async function getPublishedBySlug(slug: string): Promise<{ invitation: Invitation; photos: typeof photos.$inferSelect[] } | null> {
+export const getPublishedBySlug = cache(async (slug: string): Promise<{ invitation: Invitation; photos: typeof photos.$inferSelect[] } | null> => {
   const db = await getDb();
   const [inv] = await db
     .select()
@@ -65,4 +66,4 @@ export async function getPublishedBySlug(slug: string): Promise<{ invitation: In
   if (!inv) return null;
   const pics = await db.select().from(photos).where(eq(photos.invitationId, inv.id));
   return { invitation: inv, photos: pics };
-}
+});
