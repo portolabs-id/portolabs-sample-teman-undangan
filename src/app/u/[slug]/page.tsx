@@ -3,6 +3,10 @@ import { notFound } from "next/navigation";
 import { getPublishedBySlug } from "@/lib/invitations/queries";
 import { toInvitationView } from "@/lib/invitations/view-model";
 import { pickTemplate } from "@/components/templates/registry";
+import { getDb } from "@/lib/db";
+import { rsvps as rsvpsTable } from "@/lib/db/schema";
+import { desc, eq } from "drizzle-orm";
+import { Rsvp } from "@/components/templates/sections/Rsvp";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -22,5 +26,21 @@ export default async function PublicInvitation({
 
   const view = toInvitationView(data.invitation, data.photos);
   const Template = pickTemplate(view.template);
-  return <Template view={view} guest={to} />;
+
+  const db = await getDb();
+  const entries = await db
+    .select()
+    .from(rsvpsTable)
+    .where(eq(rsvpsTable.invitationId, data.invitation.id))
+    .orderBy(desc(rsvpsTable.createdAt));
+
+  const rsvpSlot = (
+    <Rsvp
+      invitationId={data.invitation.id}
+      guest={to}
+      entries={entries.map((e) => ({ id: e.id, guestName: e.guestName, attendance: e.attendance, message: e.message }))}
+    />
+  );
+
+  return <Template view={view} guest={to} rsvpSlot={rsvpSlot} />;
 }
