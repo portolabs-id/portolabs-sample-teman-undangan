@@ -1,0 +1,5 @@
+# Copy this file to .dev.vars and fill in real values.
+# .dev.vars is git-ignored and must never be committed.
+
+BETTER_AUTH_SECRET=replace-with-a-32-plus-character-random-string
+BETTER_AUTH_URL=http://localhost:8787
