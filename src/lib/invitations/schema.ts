@@ -12,7 +12,12 @@ export const invitationInput = z.object({
   resepsiAt: z.number().int().nullable().default(null),
   venueName: z.string().max(160).default(""),
   venueAddress: z.string().max(400).default(""),
-  mapsUrl: z.string().url().nullable().default(null),
+  mapsUrl: z
+    .string()
+    .url()
+    .refine((u) => /^https?:\/\//i.test(u), "URL harus diawali http:// atau https://")
+    .nullable()
+    .default(null),
   giftBankName: z.string().max(80).nullable().default(null),
   giftAccountNumber: z.string().max(60).nullable().default(null),
   giftAccountHolder: z.string().max(120).nullable().default(null),
