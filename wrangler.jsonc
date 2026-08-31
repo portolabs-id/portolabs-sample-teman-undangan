@@ -7,10 +7,10 @@
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
   "observability": { "enabled": true },
   "routes": [{ "pattern": "temanundangan.portolabs.id", "custom_domain": true }],
-  // TURNSTILE_SITE_KEY stays empty until the Turnstile widget is provisioned.
-  // Empty means the widget is not rendered and no token is required.
+  // Turnstile verification activates only when TURNSTILE_SECRET_KEY is also set
+  // (via `wrangler secret put`). An empty site key disables the widget entirely.
   "vars": {
-    "TURNSTILE_SITE_KEY": "",
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAEi_8jOBI1TCfFUm",
     "TURNSTILE_HOSTNAMES": "temanundangan.portolabs.id"
   },
   "services": [
