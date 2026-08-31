@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { PersonalInvite } from "@/components/landing/personal-invite";
 
+const STATS = [
+  { value: "3 tema", label: "Classic, Floral, dan Modern, bisa diganti kapan saja" },
+  { value: "< 5 menit", label: "Dari daftar sampai link undangan siap dibagikan" },
+  { value: "Tanpa cetak", label: "Tidak ada kartu tersisa dan tidak ada ongkos kirim" },
+];
+
 const GUEST_FEATURES = [
   { title: "Salam dengan namanya", body: "Link personal membuka undangan dengan nama tamu yang Anda kirimi." },
   { title: "Hitung mundur", body: "Sisa waktu menuju akad berjalan langsung di halaman undangan." },
@@ -11,15 +17,15 @@ const GUEST_FEATURES = [
 ];
 
 const STEPS = [
-  { n: "01", title: "Isi data pasangan dan acara", body: "Nama, orang tua, akad, resepsi, alamat gedung, rekening hadiah." },
-  { n: "02", title: "Pilih tema dan unggah foto", body: "Tiga tema siap pakai. Ganti kapan saja tanpa mengubah link." },
-  { n: "03", title: "Bagikan link ke tamu", body: "Kirim lewat WhatsApp satu per satu dengan nama masing-masing. RSVP masuk ke dashboard." },
+  { n: "01", title: "Isi data pasangan dan acara", body: "Nama, orang tua, akad, resepsi, alamat gedung, dan rekening hadiah." },
+  { n: "02", title: "Pilih tema dan unggah foto", body: "Tiga tema siap pakai. Ganti kapan saja tanpa mengubah link undangan." },
+  { n: "03", title: "Bagikan link ke tamu", body: "Kirim lewat WhatsApp dengan nama masing-masing. RSVP masuk ke dashboard." },
 ];
 
 const THEMES = [
-  { name: "Classic", note: "Serif tenang, tata letak simetris", className: "theme-chip--classic" },
-  { name: "Floral", note: "Ornamen bunga, warna hangat", className: "theme-chip--floral" },
-  { name: "Modern", note: "Tipografi besar, banyak ruang kosong", className: "theme-chip--modern" },
+  { name: "Classic", note: "Serif tenang, tata letak simetris", sample: "Dinda & Rafi", className: "theme-card--classic" },
+  { name: "Floral", note: "Ornamen bunga, warna hangat", sample: "Dinda & Rafi", className: "theme-card--floral" },
+  { name: "Modern", note: "Tipografi besar, banyak ruang kosong", sample: "DINDA & RAFI", className: "theme-card--modern" },
 ];
 
 export default function Home() {
@@ -28,17 +34,17 @@ export default function Home() {
       <header className="landing__bar">
         <span className="landing__wordmark">Teman Undangan</span>
         <nav className="landing__nav">
-          <Link href="/login">Masuk</Link>
+          <Link href="/login" className="btn btn--soft">Masuk</Link>
           <Link href="/register" className="btn btn--solid">Buat undangan</Link>
         </nav>
       </header>
 
       <main>
-        <section className="hero">
-          <div className="hero__copy">
-            <p className="eyebrow">Undangan pernikahan digital</p>
+        <section className="shell hero">
+          <div>
+            <p className="badge">Undangan pernikahan digital</p>
             <h1 className="hero__title">
-              Setiap tamu membuka undangan <em>dengan namanya sendiri</em>.
+              Setiap tamu membuka undangan <span>dengan namanya sendiri</span>
             </h1>
             <p className="hero__lede">
               Isi data pernikahan, pilih tema, bagikan linknya lewat WhatsApp. Kehadiran dan ucapan
@@ -46,17 +52,30 @@ export default function Home() {
             </p>
             <div className="hero__actions">
               <Link href="/register" className="btn btn--solid btn--lg">Buat undangan</Link>
-              <Link href="/login" className="btn btn--ghost btn--lg">Saya sudah punya akun</Link>
+              <Link href="/login" className="btn btn--outline btn--lg">Saya sudah punya akun</Link>
             </div>
           </div>
-          <div className="hero__demo">
-            <PersonalInvite />
-          </div>
+          <PersonalInvite />
         </section>
 
-        <section className="panel">
-          <h2 className="section-title">Yang tamu terima</h2>
-          <ul className="feature-grid">
+        <ul className="shell cell-grid cell-grid--3 stats">
+          {STATS.map((stat) => (
+            <li key={stat.value}>
+              <p className="stat__value">{stat.value}</p>
+              <p className="stat__label">{stat.label}</p>
+            </li>
+          ))}
+        </ul>
+
+        <section className="shell section">
+          <div className="section__head">
+            <h2 className="section__title">Yang tamu terima</h2>
+            <p className="section__lede">
+              Satu halaman berisi semua yang biasanya tersebar di kartu, pesan broadcast, dan
+              lampiran foto.
+            </p>
+          </div>
+          <ul className="cell-grid cell-grid--3">
             {GUEST_FEATURES.map((feature) => (
               <li key={feature.title} className="feature">
                 <h3>{feature.title}</h3>
@@ -66,42 +85,80 @@ export default function Home() {
           </ul>
         </section>
 
-        <section className="panel panel--tight">
-          <h2 className="section-title">Tiga langkah sampai link siap</h2>
-          <ol className="steps">
+        <section className="shell section">
+          <div className="section__head">
+            <h2 className="section__title">Tiga langkah sampai link siap</h2>
+          </div>
+          <ol className="cell-grid cell-grid--3">
             {STEPS.map((step) => (
               <li key={step.n} className="step">
                 <span className="step__n">{step.n}</span>
-                <div>
-                  <h3>{step.title}</h3>
-                  <p>{step.body}</p>
-                </div>
+                <h3>{step.title}</h3>
+                <p>{step.body}</p>
               </li>
             ))}
           </ol>
         </section>
 
-        <section className="panel panel--tight">
-          <h2 className="section-title">Tema</h2>
+        <section className="shell section">
+          <div className="section__head">
+            <h2 className="section__title">Tema</h2>
+            <p className="section__lede">Pilih satu sekarang, ganti kapan saja. Link undangan tetap sama.</p>
+          </div>
           <ul className="theme-grid">
             {THEMES.map((theme) => (
-              <li key={theme.name} className={`theme-chip ${theme.className}`}>
-                <span className="theme-chip__name">{theme.name}</span>
-                <span className="theme-chip__note">{theme.note}</span>
+              <li key={theme.name} className={`theme-card ${theme.className}`}>
+                <div className="theme-card__preview">
+                  <span>{theme.sample}</span>
+                </div>
+                <div className="theme-card__body">
+                  <h3>{theme.name}</h3>
+                  <p>{theme.note}</p>
+                </div>
               </li>
             ))}
           </ul>
         </section>
 
-        <section className="closing">
-          <h2>Undangan pertama Anda bisa jadi malam ini.</h2>
-          <Link href="/register" className="btn btn--solid btn--lg">Buat undangan</Link>
+        <section className="shell">
+          <div className="closing">
+            <h2>Undangan pertama Anda bisa jadi malam ini</h2>
+            <p>Buat akun, isi data acara, lalu bagikan link personal ke tamu pertama Anda.</p>
+            <Link href="/register" className="btn btn--solid btn--lg">Buat undangan</Link>
+          </div>
         </section>
       </main>
 
       <footer className="landing__foot">
-        <span>Teman Undangan</span>
-        <span>Berjalan di Cloudflare Workers, D1, dan R2.</span>
+        <div className="shell cell-grid cell-grid--4">
+          <div>
+            <h3>Teman Undangan</h3>
+            <p>Undangan pernikahan digital dengan link personal untuk setiap tamu.</p>
+          </div>
+          <div>
+            <h3>Produk</h3>
+            <ul>
+              <li><Link href="/register">Buat undangan</Link></li>
+              <li><Link href="/login">Masuk ke dashboard</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Fitur</h3>
+            <ul>
+              <li>RSVP dan buku ucapan</li>
+              <li>Galeri foto</li>
+              <li>Amplop digital</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Teknologi</h3>
+            <p>Berjalan di Cloudflare Workers, D1, R2, dan KV.</p>
+          </div>
+        </div>
+        <div className="foot-note">
+          <span>© {new Date().getFullYear()} Teman Undangan</span>
+          <span>temanundangan.portolabs.id</span>
+        </div>
       </footer>
     </div>
   );
