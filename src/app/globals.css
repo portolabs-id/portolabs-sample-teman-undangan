@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-jakarta);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-fraunces);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -127,4 +127,440 @@
   html {
     @apply font-sans;
   }
+}
+/* ── Landing page ─────────────────────────────────────────────────────────
+   Palette borrowed from a Javanese wedding: leaf-green ground, ivory card
+   stock, janur (young coconut frond) yellow as the single accent. */
+.landing {
+  --ink: #0e1f17;
+  --daun: #16382a;
+  --kertas: #f7f1e6;
+  --kertas-ink: #14261d;
+  --janur: #e8c25e;
+  --kabut: #a9bfb2;
+
+  background: var(--ink);
+  color: var(--kabut);
+  font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+.landing h1,
+.landing h2,
+.landing h3,
+.landing .invite-card__names {
+  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+  color: var(--kertas);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.landing a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.landing :is(a, button, input):focus-visible {
+  outline: 2px solid var(--janur);
+  outline-offset: 3px;
+}
+
+.landing__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem clamp(1.25rem, 5vw, 4rem);
+  border-bottom: 1px solid color-mix(in oklab, var(--kabut) 18%, transparent);
+}
+
+.landing__wordmark {
+  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+  font-size: 1.05rem;
+  color: var(--kertas);
+}
+
+.landing__nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-size: 0.9rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: transform 140ms ease, background-color 140ms ease, border-color 140ms ease;
+}
+
+.btn--solid {
+  background: var(--janur);
+  color: var(--ink);
+}
+
+.btn--ghost {
+  border: 1px solid color-mix(in oklab, var(--kabut) 40%, transparent);
+  color: var(--kertas);
+}
+
+.btn--lg {
+  padding: 0.85rem 1.6rem;
+  font-size: 1rem;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn--ghost:hover {
+  border-color: var(--janur);
+}
+
+.hero {
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 4.5rem);
+  align-items: center;
+  padding: clamp(3rem, 9vw, 6.5rem) clamp(1.25rem, 5vw, 4rem);
+  max-width: 78rem;
+  margin-inline: auto;
+}
+
+@media (min-width: 62rem) {
+  .hero {
+    grid-template-columns: 1.05fr 0.95fr;
+  }
+}
+
+.eyebrow {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--janur);
+  margin-bottom: 1.25rem;
+}
+
+.hero__title {
+  font-size: clamp(2.35rem, 5.4vw, 4rem);
+  line-height: 1.04;
+  margin-bottom: 1.25rem;
+}
+
+.hero__title em {
+  font-style: italic;
+  color: var(--janur);
+}
+
+.hero__lede {
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  line-height: 1.65;
+  max-width: 34rem;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+/* The signature: a real invitation card that greets whoever the visitor types. */
+.invite-card {
+  background: var(--kertas);
+  color: var(--kertas-ink);
+  border-radius: 4px;
+  padding: clamp(1.75rem, 4vw, 2.75rem);
+  text-align: center;
+  box-shadow: 0 24px 60px -30px rgb(0 0 0 / 0.85);
+  transform: rotate(-1.1deg);
+  border-top: 3px solid var(--janur);
+}
+
+.invite-card__eyebrow {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--kertas-ink) 55%, transparent);
+}
+
+.invite-card__names {
+  font-size: clamp(2rem, 4.5vw, 2.9rem);
+  line-height: 1.15;
+  margin: 0.75rem 0 0.5rem;
+  color: var(--kertas-ink);
+}
+
+.invite-card__names span {
+  font-style: italic;
+  color: color-mix(in oklab, var(--kertas-ink) 45%, transparent);
+}
+
+.invite-card__date {
+  font-size: 0.9rem;
+  color: color-mix(in oklab, var(--kertas-ink) 70%, transparent);
+}
+
+.invite-card__rule {
+  border: 0;
+  border-top: 1px solid color-mix(in oklab, var(--kertas-ink) 20%, transparent);
+  margin: 1.5rem auto;
+  width: 4rem;
+}
+
+.invite-card__to {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--kertas-ink) 55%, transparent);
+  display: grid;
+  gap: 0.55rem;
+}
+
+.invite-card__to strong {
+  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+  font-size: 1.4rem;
+  letter-spacing: normal;
+  text-transform: none;
+  font-weight: 600;
+  color: var(--kertas-ink);
+  animation: invite-name-in 320ms ease;
+}
+
+@keyframes invite-name-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.field-label {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--janur);
+}
+
+.field-input {
+  width: 100%;
+  background: color-mix(in oklab, var(--kertas) 8%, transparent);
+  border: 1px solid color-mix(in oklab, var(--kabut) 35%, transparent);
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+  color: var(--kertas);
+  font-size: 1rem;
+}
+
+.field-input::placeholder {
+  color: color-mix(in oklab, var(--kabut) 60%, transparent);
+}
+
+.link-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.link-row__url {
+  flex: 1 1 16rem;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: var(--kabut);
+  background: color-mix(in oklab, var(--kertas) 6%, transparent);
+  border-radius: 6px;
+  padding: 0.5rem 0.65rem;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.link-row__copy {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--kabut);
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+}
+
+.link-row__copy:hover {
+  background: var(--janur);
+}
+
+.panel {
+  padding: clamp(3rem, 7vw, 5rem) clamp(1.25rem, 5vw, 4rem);
+  max-width: 78rem;
+  margin-inline: auto;
+}
+
+.panel--tight {
+  padding-top: 0;
+}
+
+.section-title {
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  margin-bottom: 2rem;
+}
+
+.feature-grid,
+.theme-grid,
+.steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.feature-grid {
+  background: color-mix(in oklab, var(--kabut) 18%, transparent);
+  border: 1px solid color-mix(in oklab, var(--kabut) 18%, transparent);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+@media (min-width: 46rem) {
+  .feature-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 68rem) {
+  .feature-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.feature {
+  background: var(--daun);
+  padding: 1.6rem 1.4rem;
+}
+
+.feature h3 {
+  font-size: 1.05rem;
+  margin-bottom: 0.45rem;
+}
+
+.feature p {
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.steps {
+  gap: 0;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.25rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid color-mix(in oklab, var(--kabut) 20%, transparent);
+}
+
+.step:last-child {
+  border-bottom: 1px solid color-mix(in oklab, var(--kabut) 20%, transparent);
+}
+
+.step__n {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.8rem;
+  color: var(--janur);
+  padding-top: 0.35rem;
+}
+
+.step h3 {
+  font-size: 1.15rem;
+  margin-bottom: 0.35rem;
+}
+
+.step p {
+  font-size: 0.94rem;
+  line-height: 1.6;
+  max-width: 44rem;
+}
+
+@media (min-width: 46rem) {
+  .theme-grid { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+}
+
+.theme-grid { gap: 1rem; }
+
+.theme-chip {
+  border-radius: 8px;
+  padding: 2.5rem 1.4rem 1.4rem;
+  display: grid;
+  gap: 0.35rem;
+  border: 1px solid color-mix(in oklab, var(--kabut) 20%, transparent);
+}
+
+.theme-chip__name {
+  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+  font-size: 1.4rem;
+}
+
+.theme-chip__note {
+  font-size: 0.85rem;
+}
+
+.theme-chip--classic {
+  background: #16382a;
+  color: var(--kabut);
+}
+
+.theme-chip--classic .theme-chip__name { color: var(--kertas); }
+
+.theme-chip--floral {
+  background: var(--kertas);
+  color: color-mix(in oklab, var(--kertas-ink) 70%, transparent);
+}
+
+.theme-chip--floral .theme-chip__name { color: var(--kertas-ink); font-style: italic; }
+
+.theme-chip--modern {
+  background: #0b1712;
+  color: var(--kabut);
+}
+
+.theme-chip--modern .theme-chip__name {
+  color: var(--janur);
+  font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.closing {
+  text-align: center;
+  padding: clamp(3.5rem, 8vw, 6rem) 1.5rem;
+  border-top: 1px solid color-mix(in oklab, var(--kabut) 18%, transparent);
+  display: grid;
+  justify-items: center;
+  gap: 1.75rem;
+}
+
+.closing h2 {
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  max-width: 24ch;
+}
+
+.landing__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  justify-content: space-between;
+  padding: 1.5rem clamp(1.25rem, 5vw, 4rem);
+  border-top: 1px solid color-mix(in oklab, var(--kabut) 18%, transparent);
+  font-size: 0.8rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing *,
+  .landing *::before,
+  .landing *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .invite-card { transform: none; }
 }
