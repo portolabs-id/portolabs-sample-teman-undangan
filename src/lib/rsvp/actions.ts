@@ -1,11 +1,33 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { and, desc, eq } from "drizzle-orm";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db";
 import { rsvps, invitations } from "@/lib/db/schema";
+import { verifyTurnstileToken } from "@/lib/turnstile/verify";
+import { RSVP_TURNSTILE_ACTION } from "@/lib/turnstile/actions";
 import { rsvpInput } from "./schema";
 
+async function guardRsvpRequest(invitationId: string, formData: FormData) {
+  const requestHeaders = await headers();
+  const clientIp = requestHeaders.get("cf-connecting-ip");
+  const { env } = await getCloudflareContext({ async: true });
+
+  const { success } = await env.RSVP_RATE_LIMITER.limit({ key: `${invitationId}:${clientIp ?? "unknown"}` });
+  if (!success) throw new Error("Terlalu banyak kiriman. Coba lagi sebentar lagi.");
+
+  const verified = await verifyTurnstileToken({
+    token: formData.get("cf-turnstile-response")?.toString(),
+    action: RSVP_TURNSTILE_ACTION,
+    remoteIp: clientIp,
+  });
+  if (!verified) throw new Error("Verifikasi keamanan gagal. Muat ulang halaman dan coba lagi.");
+}
+
 export async function submitRsvpAction(invitationId: string, formData: FormData) {
+  await guardRsvpRequest(invitationId, formData);
+
   const parsed = rsvpInput.parse({
     guestName: formData.get("guestName"),
     attendance: formData.get("attendance"),

@@ -5,14 +5,40 @@
   "compatibility_date": "2024-12-30",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "observability": { "enabled": true },
+  "routes": [{ "pattern": "temanundangan.portolabs.id", "custom_domain": true }],
+  // TURNSTILE_SITE_KEY stays empty until the Turnstile widget is provisioned.
+  // Empty means the widget is not rendered and no token is required.
+  "vars": {
+    "TURNSTILE_SITE_KEY": "",
+    "TURNSTILE_HOSTNAMES": "temanundangan.portolabs.id"
+  },
   "services": [
     { "binding": "WORKER_SELF_REFERENCE", "service": "teman-undangan" }
   ],
+  "kv_namespaces": [
+    { "binding": "NEXT_INC_CACHE_KV", "id": "62e32724a14b43a29237561226f13f78" }
+  ],
   "r2_buckets": [
-    { "binding": "NEXT_INC_CACHE_R2_BUCKET", "bucket_name": "teman-undangan-cache" },
     { "binding": "MEDIA", "bucket_name": "teman-undangan-media" }
   ],
   "d1_databases": [
-    { "binding": "DB", "database_name": "teman-undangan", "database_id": "PLACEHOLDER_RUN_D1_CREATE" }
+    {
+      "binding": "DB",
+      "database_name": "teman-undangan",
+      "database_id": "4c3073dc-0977-415c-855c-d47012331411",
+      "migrations_dir": "drizzle"
+    },
+    {
+      "binding": "NEXT_TAG_CACHE_D1",
+      "database_name": "teman-undangan",
+      "database_id": "4c3073dc-0977-415c-855c-d47012331411"
+    }
+  ],
+  "ratelimits": [
+    { "name": "RSVP_RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 5, "period": 60 } }
+  ],
+  "analytics_engine_datasets": [
+    { "binding": "INVITATION_ANALYTICS", "dataset": "teman_undangan_views" }
   ]
 }

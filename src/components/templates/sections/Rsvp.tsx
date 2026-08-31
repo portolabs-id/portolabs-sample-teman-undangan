@@ -1,4 +1,6 @@
 import { submitRsvpAction } from "@/lib/rsvp/actions";
+import { RSVP_TURNSTILE_ACTION } from "@/lib/turnstile/actions";
+import { TurnstileWidget } from "@/components/turnstile-widget";
 
 type Entry = { id: string; guestName: string; attendance: "yes" | "no" | "maybe"; message: string | null };
 
@@ -15,6 +17,7 @@ export function Rsvp({ invitationId, guest, entries }: { invitationId: string; g
         </select>
         <input name="headcount" type="number" min={1} max={20} defaultValue={1} className="rounded-md border p-2" />
         <textarea name="message" placeholder="Ucapan & doa" className="rounded-md border p-2" rows={3} />
+        <TurnstileWidget action={RSVP_TURNSTILE_ACTION} />
         <button className="rounded-md bg-black px-4 py-2 text-white" type="submit">Kirim</button>
       </form>
 

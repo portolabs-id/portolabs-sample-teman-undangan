@@ -3,3 +3,6 @@
 
 BETTER_AUTH_SECRET=replace-with-a-32-plus-character-random-string
 BETTER_AUTH_URL=http://localhost:8787
+
+# Optional: Turnstile secret key. Leave unset to disable bot verification locally.
+# TURNSTILE_SECRET_KEY=

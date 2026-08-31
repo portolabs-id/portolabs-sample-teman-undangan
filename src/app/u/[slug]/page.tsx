@@ -7,6 +7,8 @@ import { getDb } from "@/lib/db";
 import { rsvps as rsvpsTable } from "@/lib/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { Rsvp } from "@/components/templates/sections/Rsvp";
+import { headers } from "next/headers";
+import { recordInvitationView } from "@/lib/analytics/views";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -26,6 +28,13 @@ export default async function PublicInvitation({
 
   const view = toInvitationView(data.invitation, data.photos);
   const Template = pickTemplate(view.template);
+
+  await recordInvitationView({
+    slug,
+    template: view.template,
+    country: (await headers()).get("cf-ipcountry") ?? "unknown",
+    hasGuestName: Boolean(to),
+  });
 
   const db = await getDb();
   const entries = await db
