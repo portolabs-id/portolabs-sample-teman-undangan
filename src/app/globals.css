@@ -839,3 +839,23 @@
 }
 
 .gallery__remove:hover { background: var(--accent); }
+
+/* Wordmark: logo mark plus product name, shared by every header. */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+  color: var(--brand);
+}
+
+.brand img { width: 2.125rem; height: 2.125rem; }
+.brand__name { display: inline-flex; }
+.brand__teman { color: var(--brand); }
+.brand__undangan { color: var(--accent); }
+.brand:hover .brand__teman { color: var(--brand-ink); }
+.brand:hover .brand__undangan { color: #dc5f37; }
+
+.landing__foot .brand { margin-bottom: 0.9rem; }

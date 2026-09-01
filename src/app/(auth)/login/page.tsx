@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { AuthForm } from "@/components/auth-form";
+import { Brand } from "@/components/brand";
 
 export default function LoginPage() {
   return (
     <div className="auth__card">
       <div>
-        <Link href="/" className="auth__wordmark">Teman Undangan</Link>
+        <Brand />
         <h1 className="auth__title">Masuk</h1>
         <p className="auth__subtitle">Lanjutkan mengelola undangan dan daftar tamu Anda.</p>
       </div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PersonalInvite } from "@/components/landing/personal-invite";
+import { Brand } from "@/components/brand";
 
 const STATS = [
   { value: "3 tema", label: "Classic, Floral, dan Modern, bisa diganti kapan saja" },
@@ -42,7 +43,7 @@ export default function Home() {
   return (
     <div className="landing">
       <header className="landing__bar">
-        <span className="landing__wordmark">Teman Undangan</span>
+        <Brand />
         <nav className="landing__nav">
           <Link href="/login" className="btn btn--soft">Masuk</Link>
           <Link href="/register" className="btn btn--solid">Buat undangan</Link>
@@ -160,7 +161,7 @@ export default function Home() {
       <footer className="landing__foot">
         <div className="shell cell-grid cell-grid--4">
           <div>
-            <h3>Teman Undangan</h3>
+            <Brand />
             <p>Undangan pernikahan digital dengan link personal untuk setiap tamu.</p>
           </div>
           <div>
