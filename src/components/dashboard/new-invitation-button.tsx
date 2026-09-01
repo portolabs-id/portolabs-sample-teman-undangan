@@ -1,10 +1,13 @@
-import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import { createDraftAction } from "@/app/(app)/dashboard/actions";
 
 export function NewInvitationButton() {
   return (
     <form action={createDraftAction}>
-      <Button type="submit">+ Undangan baru</Button>
+      <button type="submit" className="btn btn--solid">
+        <Plus size={16} strokeWidth={2.6} style={{ marginRight: "0.4rem" }} />
+        Undangan baru
+      </button>
     </form>
   );
 }

@@ -7,20 +7,20 @@ export default async function DashboardPage() {
   const user = await requireUser();
   const invitations = await listInvitations(user.id);
   return (
-    <div className="grid gap-6">
-      <div className="flex items-center justify-between">
+    <>
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">Undangan Saya</h1>
         <NewInvitationButton />
       </div>
       {invitations.length === 0 ? (
         <p className="text-muted-foreground">Belum ada undangan. Klik &quot;Undangan baru&quot; untuk mulai.</p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="inv-grid">
           {invitations.map((i) => (
             <InvitationCard key={i.id} inv={{ id: i.id, slug: i.slug, coupleTitle: `${i.groomName} & ${i.brideName}`, status: i.status }} />
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 }

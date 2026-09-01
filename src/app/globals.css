@@ -156,7 +156,8 @@
   letter-spacing: -0.02em;
 }
 
-.landing a { color: inherit; text-decoration: none; }
+.landing a { text-decoration: none; }
+.landing a:not(.btn):not(.landing__wordmark):not(.auth__wordmark) { color: inherit; }
 
 .landing :is(a, button, input):focus-visible {
   outline: 2px solid var(--pink);
@@ -213,7 +214,7 @@
 }
 
 .btn--solid {
-  background: linear-gradient(135deg, #ef5f97 0%, var(--pink) 55%, var(--pink-ink) 100%);
+  background: linear-gradient(135deg, #e94a8b 0%, #d23173 55%, #b3245e 100%);
   color: #fff;
   box-shadow: 0 10px 22px -12px rgb(224 64 127 / 0.75), inset 0 1px 0 rgb(255 255 255 / 0.28);
 }
@@ -610,3 +611,228 @@
 .auth__hint { color: var(--muted); font-size: 0.9rem; text-align: center; }
 .auth__hint a { color: var(--pink); font-weight: 500; }
 .auth__hint a:hover { text-decoration: underline; }
+
+/* ── Dashboard ────────────────────────────────────────────────────────────
+   Reuses the landing tokens so the signed-in area matches the marketing side. */
+.app { min-height: 100vh; }
+
+.app__body {
+  max-width: 64rem;
+  margin-inline: auto;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1.25rem, 5vw, 2.5rem);
+  display: grid;
+  gap: 1.75rem;
+}
+
+.app__body h1 { font-size: clamp(1.5rem, 3vw, 2rem); }
+.app__body > p { color: var(--muted); }
+
+.inv-grid { display: grid; gap: 1rem; }
+@media (min-width: 46rem) { .inv-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.inv-card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.4rem;
+  background: var(--surface);
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+}
+
+.inv-card__title { font-size: 1.1rem; font-weight: 600; }
+.inv-card__slug { font-family: var(--font-geist-mono), ui-monospace, monospace; font-size: 0.78rem; color: var(--muted); }
+
+.status-pill {
+  justify-self: start;
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.78rem;
+  background: #f4f4f5;
+  color: var(--muted);
+}
+
+.status-pill--live { background: var(--pink-soft); color: var(--pink-ink); }
+
+.inv-card__actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.6rem; }
+.inv-card__actions .btn { padding: 0.4rem 0.95rem; font-size: 0.85rem; }
+
+/* ── Builder wizard ───────────────────────────────────────────────────────
+   Step list on the left, one panel at a time on the right. Every step stays
+   mounted inside one form so Simpan submits the whole invitation. */
+.wizard { display: grid; gap: 1.5rem; align-items: start; }
+
+@media (min-width: 60rem) {
+  .wizard { grid-template-columns: 16rem 1fr; }
+}
+
+.wizard__nav ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; }
+
+.wizard__step {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: center;
+  text-align: left;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 140ms ease, border-color 140ms ease;
+}
+
+.wizard__step:hover { background: var(--surface-alt); }
+.wizard__step.is-active { background: var(--pink-soft); border-color: #f6d2e1; }
+.wizard__step strong { display: block; font-size: 0.95rem; font-weight: 500; }
+.wizard__step small { display: block; color: var(--muted); font-size: 0.8rem; }
+.wizard__step.is-active strong { color: var(--pink-ink); }
+
+.wizard__marker {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  display: grid;
+  place-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: #f4f4f5;
+  color: var(--muted);
+}
+
+.wizard__step.is-active .wizard__marker { background: var(--pink); color: #fff; }
+.wizard__step.is-done .wizard__marker { background: #e8f5ee; color: #197a4b; }
+
+.wizard__panel {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  background: var(--surface);
+}
+
+.wizard__title { font-size: 1.25rem; font-weight: 600; }
+.wizard__lede { color: var(--muted); font-size: 0.92rem; margin: 0.4rem 0 1.5rem; }
+
+.field-grid { display: grid; gap: 1rem; }
+@media (min-width: 40rem) { .field-grid { grid-template-columns: repeat(2, 1fr); } }
+.field--full { grid-column: 1 / -1; }
+
+.field > select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  font-size: 0.95rem;
+}
+
+.wizard__bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.wizard__bar-right { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+/* Theme picker */
+.template-picker { display: grid; gap: 1rem; }
+@media (min-width: 40rem) { .template-picker { grid-template-columns: repeat(3, 1fr); } }
+
+.template-option {
+  display: grid;
+  gap: 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0.9rem;
+  cursor: pointer;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.template-option:hover { border-color: #f0b9d1; }
+
+.template-option.is-selected {
+  border-color: var(--pink);
+  box-shadow: 0 0 0 3px rgb(224 64 127 / 0.14);
+}
+
+.template-option input { position: absolute; opacity: 0; pointer-events: none; }
+
+.template-option__preview {
+  display: grid;
+  place-content: center;
+  height: 6.5rem;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.template-option__preview.theme-card--classic {
+  background: #fffaf3;
+  color: #3f3a34;
+  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+}
+
+.template-option__preview.theme-card--floral {
+  background: linear-gradient(160deg, #fdeef4, #fff6ea);
+  color: var(--pink-ink);
+  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+  font-style: italic;
+}
+
+.template-option__preview.theme-card--modern {
+  background: #101014;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.template-option__name { font-weight: 500; text-transform: capitalize; margin-top: 0.4rem; }
+.template-option__note { color: var(--muted); font-size: 0.85rem; }
+
+/* Gallery */
+.gallery { display: grid; gap: 1.25rem; }
+
+.gallery__upload {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  padding: 1rem;
+  background: var(--surface-alt);
+}
+
+.gallery__upload input[type="file"] { font-size: 0.9rem; color: var(--muted); }
+.gallery__empty { color: var(--muted); font-size: 0.92rem; }
+
+.gallery__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+@media (min-width: 46rem) { .gallery__grid { grid-template-columns: repeat(4, 1fr); } }
+
+.gallery__item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.gallery__item form { position: absolute; top: 0.4rem; right: 0.4rem; }
+
+.gallery__remove {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  display: grid;
+  place-content: center;
+  background: rgb(0 0 0 / 0.55);
+  color: #fff;
+  cursor: pointer;
+}
+
+.gallery__remove:hover { background: var(--pink); }

@@ -5,6 +5,16 @@ const STATS = [
   { value: "3 tema", label: "Classic, Floral, dan Modern, bisa diganti kapan saja" },
   { value: "< 5 menit", label: "Dari daftar sampai link undangan siap dibagikan" },
   { value: "Tanpa cetak", label: "Tidak ada kartu tersisa dan tidak ada ongkos kirim" },
+  { value: "1 link", label: "Satu tautan untuk semua tamu, tanpa aplikasi tambahan" },
+];
+
+const OWNER_ADVANTAGES = [
+  { title: "Link tidak pernah berubah", body: "Ganti tema, foto, atau jam acara sesudah undangan tersebar. Tautan yang sudah dikirim tetap berlaku." },
+  { title: "Rekap kehadiran otomatis", body: "Jawaban tamu langsung terkumpul di dashboard, lengkap dengan jumlah orang, siap dipakai menghitung porsi katering." },
+  { title: "Ucapan tanpa moderasi manual", body: "Doa dan ucapan tampil di halaman undangan begitu tamu mengirimnya, tersimpan rapi untuk dibaca ulang." },
+  { title: "Terbuka di HP apa pun", body: "Halaman biasa di browser. Tamu tidak perlu memasang aplikasi atau membuat akun untuk membuka undangan." },
+  { title: "Terlindung dari bot", body: "Verifikasi Cloudflare Turnstile dan batas kiriman per menit menjaga daftar RSVP tetap berisi tamu sungguhan." },
+  { title: "Cepat dari mana saja", body: "Halaman disajikan dari jaringan Cloudflare, jadi undangan terbuka cepat baik dari kota besar maupun kampung halaman." },
 ];
 
 const GUEST_FEATURES = [
@@ -58,7 +68,7 @@ export default function Home() {
           <PersonalInvite />
         </section>
 
-        <ul className="shell cell-grid cell-grid--3 stats">
+        <ul className="shell cell-grid cell-grid--4 stats">
           {STATS.map((stat) => (
             <li key={stat.value}>
               <p className="stat__value">{stat.value}</p>
@@ -80,6 +90,24 @@ export default function Home() {
               <li key={feature.title} className="feature">
                 <h3>{feature.title}</h3>
                 <p>{feature.body}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="shell section">
+          <div className="section__head">
+            <h2 className="section__title">Kenapa lewat Teman Undangan</h2>
+            <p className="section__lede">
+              Sisi yang Anda urus sebagai tuan rumah: mengubah detail acara, membaca jawaban tamu,
+              dan memastikan undangan terbuka mulus di tangan siapa pun.
+            </p>
+          </div>
+          <ul className="cell-grid cell-grid--3">
+            {OWNER_ADVANTAGES.map((item) => (
+              <li key={item.title} className="feature">
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
               </li>
             ))}
           </ul>

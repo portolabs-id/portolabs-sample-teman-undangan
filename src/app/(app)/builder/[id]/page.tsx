@@ -6,8 +6,7 @@ import { getInvitationForOwner } from "@/lib/invitations/queries";
 import { getDb } from "@/lib/db";
 import { photos as photosTable } from "@/lib/db/schema";
 import { mediaUrl } from "@/lib/invitations/view-model";
-import { BuilderForm } from "./builder-form";
-import { GalleryManager } from "./gallery-manager";
+import { BuilderWizard } from "./builder-wizard";
 
 export default async function BuilderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -28,17 +27,24 @@ export default async function BuilderPage({ params }: { params: Promise<{ id: st
     giftBankName: inv.giftBankName ?? "", giftAccountNumber: inv.giftAccountNumber ?? "", giftAccountHolder: inv.giftAccountHolder ?? "",
   };
 
+  const isPublished = inv.status === "published";
+
   return (
-    <div className="grid gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Edit Undangan</h1>
-        <div className="flex gap-2 text-sm">
-          {inv.status === "published" && <Link className="underline" href={`/u/${inv.slug}`} target="_blank">Lihat</Link>}
-          <Link className="underline" href="/dashboard">Kembali</Link>
+    <>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">{inv.groomName} &amp; {inv.brideName}</h1>
+          <p className={`status-pill ${isPublished ? "status-pill--live" : ""}`}>{isPublished ? "Terbit" : "Draf"}</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {isPublished && (
+            <Link href={`/u/${inv.slug}`} target="_blank" className="btn btn--soft">Lihat undangan</Link>
+          )}
+          <Link href={`/builder/${id}/rsvps`} className="btn btn--soft">RSVP</Link>
+          <Link href="/dashboard" className="btn btn--soft">Kembali</Link>
         </div>
       </div>
-      <BuilderForm id={id} values={values} />
-      <GalleryManager id={id} photos={galleryPics} />
-    </div>
+      <BuilderWizard id={id} values={values} photos={galleryPics} />
+    </>
   );
 }
