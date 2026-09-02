@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { toast } from "sonner";
-import { togglePublishAction } from "@/app/(app)/dashboard/actions";
+import { setInvitationStatusAction } from "@/app/(app)/dashboard/actions";
 
 type Invitation = { id: string; slug: string; coupleTitle: string; status: "draft" | "published" };
 
@@ -30,7 +30,7 @@ export function InvitationCard({ inv }: { inv: Invitation }) {
         {isPublished && (
           <button type="button" onClick={copyLink} className="btn btn--soft">Salin link</button>
         )}
-        <form action={togglePublishAction.bind(null, inv.id, isPublished ? "draft" : "published")}>
+        <form action={setInvitationStatusAction.bind(null, inv.id, isPublished ? "draft" : "published")}>
           <button type="submit" className={isPublished ? "btn btn--outline" : "btn btn--solid"}>
             {isPublished ? "Jadikan draf" : "Terbitkan"}
           </button>

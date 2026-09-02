@@ -44,7 +44,7 @@ export default async function BuilderPage({ params }: { params: Promise<{ id: st
           <Link href="/dashboard" className="btn btn--soft">Kembali</Link>
         </div>
       </div>
-      <BuilderWizard id={id} values={values} photos={galleryPics} />
+      <BuilderWizard id={id} status={inv.status} values={values} photos={galleryPics} />
     </>
   );
 }

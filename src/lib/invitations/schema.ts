@@ -24,3 +24,9 @@ export const invitationInput = z.object({
 });
 
 export type InvitationInput = z.infer<typeof invitationInput>;
+
+export const DRAFT_DEFAULTS: InvitationInput = invitationInput.parse({
+  groomName: "Mempelai Pria",
+  brideName: "Mempelai Wanita",
+  template: "classic",
+});

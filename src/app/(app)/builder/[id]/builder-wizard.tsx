@@ -1,13 +1,16 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
 import { TEMPLATES } from "@/lib/invitations/schema";
+import { setInvitationStatusAction } from "@/app/(app)/dashboard/actions";
 import { saveInvitationAction } from "./actions";
 import { GalleryManager } from "./gallery-manager";
 
 type Photo = { id: string; url: string };
-type Props = { id: string; values: Record<string, string>; photos: Photo[] };
+type Status = "draft" | "published";
+type Props = { id: string; status: Status; values: Record<string, string>; photos: Photo[] };
 
 const STEPS = [
   { key: "tema", label: "Tema", hint: "Tampilan undangan" },
@@ -30,21 +33,37 @@ function toLocalInput(ms: string): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-export function BuilderWizard({ id, values, photos }: Props) {
+export function BuilderWizard({ id, status, values, photos }: Props) {
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [publishing, setPublishing] = useState(false);
   const [template, setTemplate] = useState(values.template);
   const isGalleryStep = STEPS[step].key === "galeri";
+  const isPublished = status === "published";
 
-  async function save(fd: FormData) {
+  async function saveAndContinue(fd: FormData) {
     setSaving(true);
     try {
       await saveInvitationAction(id, fd);
-      toast.success("Tersimpan");
+      setStep((s) => Math.min(STEPS.length - 1, s + 1));
     } catch {
       toast.error("Gagal menyimpan, coba lagi.");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function changeStatus(next: Status) {
+    setPublishing(true);
+    try {
+      await setInvitationStatusAction(id, next);
+      toast.success(next === "published" ? "Undangan terbit" : "Undangan kembali jadi draf");
+      router.refresh();
+    } catch {
+      toast.error("Gagal mengubah status, coba lagi.");
+    } finally {
+      setPublishing(false);
     }
   }
 
@@ -74,7 +93,7 @@ export function BuilderWizard({ id, values, photos }: Props) {
       </nav>
 
       <section className="wizard__panel">
-        <form action={save} hidden={isGalleryStep}>
+        <form action={saveAndContinue} hidden={isGalleryStep}>
           <div hidden={STEPS[step].key !== "tema"}>
             <h2 className="wizard__title">Tema</h2>
             <p className="wizard__lede">Pilih tampilan undangan. Bisa diganti kapan saja tanpa mengubah link.</p>
@@ -139,16 +158,8 @@ export function BuilderWizard({ id, values, photos }: Props) {
               Sebelumnya
             </button>
             <div className="wizard__bar-right">
-              <button type="submit" className="btn btn--outline" disabled={saving}>
-                {saving ? "Menyimpan…" : "Simpan"}
-              </button>
-              <button
-                type="button"
-                className="btn btn--solid"
-                onClick={() => setStep((s) => Math.min(STEPS.length - 1, s + 1))}
-                disabled={step === STEPS.length - 1}
-              >
-                Lanjut
+              <button type="submit" className="btn btn--solid" disabled={saving}>
+                {saving ? "Menyimpan…" : "Lanjut"}
               </button>
             </div>
           </div>
@@ -163,6 +174,16 @@ export function BuilderWizard({ id, values, photos }: Props) {
               <button type="button" className="btn btn--soft" onClick={() => setStep((s) => s - 1)}>
                 Sebelumnya
               </button>
+              <div className="wizard__bar-right">
+                <button
+                  type="button"
+                  className={isPublished ? "btn btn--outline" : "btn btn--solid"}
+                  onClick={() => changeStatus(isPublished ? "draft" : "published")}
+                  disabled={publishing}
+                >
+                  {publishing ? "Memproses…" : isPublished ? "Jadikan draf" : "Terbitkan"}
+                </button>
+              </div>
             </div>
           </div>
         )}
