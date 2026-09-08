@@ -12,6 +12,14 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated output and reports: not ours to lint.
+    ".open-next/**",
+    ".wrangler/**",
+    "coverage/**",
+    "playwright-report/**",
+    "test-results/**",
+    "e2e/.results/**",
+    "cloudflare-env.d.ts",
   ]),
 ]);
 

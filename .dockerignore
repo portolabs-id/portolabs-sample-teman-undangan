@@ -1,0 +1,13 @@
+.git
+.github
+.next
+.open-next
+.wrangler
+node_modules
+coverage
+playwright-report
+e2e/.results
+.dev.vars
+*.tsbuildinfo
+docs
+cloudflare-env.d.ts

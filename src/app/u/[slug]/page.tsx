@@ -51,5 +51,9 @@ export default async function PublicInvitation({
     />
   );
 
+  // pickTemplate returns a module-level component from the registry, never one
+  // built during this render, so its identity is stable and the subtree is not
+  // remounted.
+  // eslint-disable-next-line react-hooks/static-components
   return <Template view={view} guest={to} rsvpSlot={rsvpSlot} />;
 }

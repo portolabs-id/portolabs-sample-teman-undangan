@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
@@ -36,21 +37,29 @@ function toLocalInput(ms: string): string {
 export function BuilderWizard({ id, status, values, photos }: Props) {
   const router = useRouter();
   const [step, setStep] = useState(0);
-  const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [template, setTemplate] = useState(values.template);
+  // React resets an uncontrolled form once its Action settles, re-seeding every
+  // field from the server props that are still in flight. Holding the fields in
+  // client state keeps what the guest typed, whatever the revalidation does.
+  const [fields, setFields] = useState<Record<string, string>>(() => ({
+    ...values,
+    akadAt: toLocalInput(values.akadAt),
+    resepsiAt: toLocalInput(values.resepsiAt),
+  }));
+
+  function updateField(name: string, value: string) {
+    setFields((current) => ({ ...current, [name]: value }));
+  }
   const isGalleryStep = STEPS[step].key === "galeri";
   const isPublished = status === "published";
 
   async function saveAndContinue(fd: FormData) {
-    setSaving(true);
     try {
       await saveInvitationAction(id, fd);
       setStep((s) => Math.min(STEPS.length - 1, s + 1));
     } catch {
       toast.error("Gagal menyimpan, coba lagi.");
-    } finally {
-      setSaving(false);
     }
   }
 
@@ -119,10 +128,10 @@ export function BuilderWizard({ id, status, values, photos }: Props) {
             <h2 className="wizard__title">Mempelai</h2>
             <p className="wizard__lede">Nama yang tampil besar di undangan, beserta nama orang tua.</p>
             <div className="field-grid">
-              <Field name="groomName" label="Nama pria" defaultValue={values.groomName} />
-              <Field name="brideName" label="Nama wanita" defaultValue={values.brideName} />
-              <Field name="groomParents" label="Orang tua pria" defaultValue={values.groomParents} />
-              <Field name="brideParents" label="Orang tua wanita" defaultValue={values.brideParents} />
+              <Field name="groomName" label="Nama pria" value={fields.groomName} onChange={updateField} />
+              <Field name="brideName" label="Nama wanita" value={fields.brideName} onChange={updateField} />
+              <Field name="groomParents" label="Orang tua pria" value={fields.groomParents} onChange={updateField} />
+              <Field name="brideParents" label="Orang tua wanita" value={fields.brideParents} onChange={updateField} />
             </div>
           </div>
 
@@ -130,11 +139,11 @@ export function BuilderWizard({ id, status, values, photos }: Props) {
             <h2 className="wizard__title">Acara</h2>
             <p className="wizard__lede">Waktu akad dan resepsi dipakai untuk hitung mundur dan tombol tambah ke kalender.</p>
             <div className="field-grid">
-              <Field name="akadAt" label="Akad" type="datetime-local" defaultValue={toLocalInput(values.akadAt)} />
-              <Field name="resepsiAt" label="Resepsi" type="datetime-local" defaultValue={toLocalInput(values.resepsiAt)} />
-              <Field name="venueName" label="Nama tempat" defaultValue={values.venueName} />
-              <Field name="venueAddress" label="Alamat" defaultValue={values.venueAddress} />
-              <Field name="mapsUrl" label="Link Google Maps" defaultValue={values.mapsUrl} placeholder="https://maps.app.goo.gl/…" full />
+              <Field name="akadAt" label="Akad" type="datetime-local" value={fields.akadAt} onChange={updateField} />
+              <Field name="resepsiAt" label="Resepsi" type="datetime-local" value={fields.resepsiAt} onChange={updateField} />
+              <Field name="venueName" label="Nama tempat" value={fields.venueName} onChange={updateField} />
+              <Field name="venueAddress" label="Alamat" value={fields.venueAddress} onChange={updateField} />
+              <Field name="mapsUrl" label="Link Google Maps" value={fields.mapsUrl} onChange={updateField} placeholder="https://maps.app.goo.gl/…" full />
             </div>
           </div>
 
@@ -142,9 +151,9 @@ export function BuilderWizard({ id, status, values, photos }: Props) {
             <h2 className="wizard__title">Amplop digital</h2>
             <p className="wizard__lede">Tamu melihat nomor rekening dengan tombol salin. Kosongkan jika tidak dipakai.</p>
             <div className="field-grid">
-              <Field name="giftBankName" label="Bank" defaultValue={values.giftBankName} placeholder="BCA" />
-              <Field name="giftAccountNumber" label="No. rekening" defaultValue={values.giftAccountNumber} />
-              <Field name="giftAccountHolder" label="Atas nama" defaultValue={values.giftAccountHolder} full />
+              <Field name="giftBankName" label="Bank" value={fields.giftBankName} onChange={updateField} placeholder="BCA" />
+              <Field name="giftAccountNumber" label="No. rekening" value={fields.giftAccountNumber} onChange={updateField} />
+              <Field name="giftAccountHolder" label="Atas nama" value={fields.giftAccountHolder} onChange={updateField} full />
             </div>
           </div>
 
@@ -158,9 +167,7 @@ export function BuilderWizard({ id, status, values, photos }: Props) {
               Sebelumnya
             </button>
             <div className="wizard__bar-right">
-              <button type="submit" className="btn btn--solid" disabled={saving}>
-                {saving ? "Menyimpan…" : "Lanjut"}
-              </button>
+              <SaveButton />
             </div>
           </div>
         </form>
@@ -192,15 +199,42 @@ export function BuilderWizard({ id, status, values, photos }: Props) {
   );
 }
 
+/**
+ * React entangles every state update made inside a form Action into one
+ * transition, so an ad-hoc `saving` flag would never paint. `useFormStatus`
+ * reads the pending state of the enclosing form instead.
+ */
+function SaveButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" className="btn btn--solid" disabled={pending}>
+      {pending ? "Menyimpan…" : "Lanjut"}
+    </button>
+  );
+}
+
 function Field({
-  name, label, defaultValue, type = "text", placeholder, full,
+  name, label, value, onChange, type = "text", placeholder, full,
 }: {
-  name: string; label: string; defaultValue?: string; type?: string; placeholder?: string; full?: boolean;
+  name: string;
+  label: string;
+  value?: string;
+  onChange: (name: string, value: string) => void;
+  type?: string;
+  placeholder?: string;
+  full?: boolean;
 }) {
   return (
     <div className={`field ${full ? "field--full" : ""}`}>
       <label htmlFor={name}>{label}</label>
-      <input id={name} name={name} type={type} placeholder={placeholder} defaultValue={defaultValue ?? ""} />
+      <input
+        id={name}
+        name={name}
+        type={type}
+        placeholder={placeholder}
+        value={value ?? ""}
+        onChange={(event) => onChange(name, event.target.value)}
+      />
     </div>
   );
 }
