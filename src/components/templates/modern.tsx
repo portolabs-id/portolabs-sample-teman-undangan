@@ -8,7 +8,7 @@ import { Envelope } from "./sections/Envelope";
 
 export function ModernTemplate({ view, guest, rsvpSlot }: TemplateProps) {
   return (
-    <main className="bg-neutral-950 font-sans text-neutral-100 [&_.bg-white\\/70]:bg-black/50 [&_h1]:text-white [&_h2]:tracking-tight">
+    <main className="bg-neutral-950 font-sans text-neutral-100 [&_.bg-white\/70]:bg-black/50 [&_h1]:text-white [&_h2]:tracking-tight">
       <Hero view={view} guest={guest} />
       <Couple view={view} />
       <Events view={view} />

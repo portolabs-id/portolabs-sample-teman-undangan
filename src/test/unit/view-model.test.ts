@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { toInvitationView } from "@/lib/invitations/view-model";
+import { toInvitationView, mediaUrl } from "@/lib/invitations/view-model";
 import type { Invitation, Photo } from "@/lib/db/schema";
 
 const base: Invitation = {
@@ -23,5 +23,26 @@ describe("toInvitationView", () => {
   it("flags missing gift info", () => {
     const v = toInvitationView({ ...base, giftAccountNumber: null }, []);
     expect(v.hasGift).toBe(false);
+  });
+
+  it("leaves coverUrl null when there is no cover photo key", () => {
+    const v = toInvitationView({ ...base, coverPhotoKey: null }, []);
+    expect(v.coverUrl).toBeNull();
+  });
+
+  it("sorts the gallery by photo order regardless of input order", () => {
+    const photos: Photo[] = [
+      { id: "p2", invitationId: "i1", r2Key: "second.jpg", order: 2, createdAt: 0 },
+      { id: "p1", invitationId: "i1", r2Key: "first.jpg", order: 1, createdAt: 0 },
+      { id: "p3", invitationId: "i1", r2Key: "third.jpg", order: 3, createdAt: 0 },
+    ];
+    const v = toInvitationView(base, photos);
+    expect(v.gallery).toEqual(["/api/media/first.jpg", "/api/media/second.jpg", "/api/media/third.jpg"]);
+  });
+});
+
+describe("mediaUrl", () => {
+  it("percent-encodes a key containing a slash", () => {
+    expect(mediaUrl("folder/photo.jpg")).toBe("/api/media/folder%2Fphoto.jpg");
   });
 });

@@ -1,0 +1,144 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "24"
+
+jobs:
+  quality:
+    name: Lint & typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Generate Cloudflare binding types
+        run: npm run cf-typegen
+      - run: npm run lint
+      - run: npm run typecheck
+
+  unit:
+    name: Unit tests & coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Generate Cloudflare binding types
+        run: npm run cf-typegen
+      # Coverage thresholds are pinned at 100% in vitest.config.ts, so this step
+      # fails the build when any line, branch, function or statement is missed.
+      - name: Run tests with coverage
+        run: npm run test:coverage
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage
+          retention-days: 14
+
+  e2e:
+    name: End-to-end tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Generate Cloudflare binding types
+        run: npm run cf-typegen
+      - name: Write local dev vars
+        run: |
+          cat > .dev.vars <<'VARS'
+          BETTER_AUTH_SECRET=ci-secret-value-at-least-32-characters-long
+          BETTER_AUTH_URL=http://localhost:8787
+          VARS
+      - name: Apply local D1 migrations
+        run: npm run e2e:setup
+      - name: Install Playwright browser
+        run: npm run e2e:install
+      - name: Run Playwright suite
+        run: npm run e2e
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 14
+
+  docker:
+    name: Build deploy image
+    needs: [quality, unit, e2e]
+    # Blacksmith runners give this job a warm buildkit cache on a sticky disk.
+    # Set the DOCKER_RUNNER repository variable to run it elsewhere.
+    runs-on: ${{ vars.DOCKER_RUNNER || 'blacksmith-4vcpu-ubuntu-2404' }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Docker builder
+        uses: useblacksmith/setup-docker-builder@v1
+        with:
+          max-cache-size-mb: "20480"
+
+      - name: Derive image metadata
+        id: meta
+        run: |
+          echo "image=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+          echo "wrangler=$(node -p "require('./package.json').devDependencies.wrangler.replace(/^\^/, '')")" >> "$GITHUB_OUTPUT"
+          # On a pull request GITHUB_REF_NAME is "<number>/merge", and a Docker
+          # tag may not contain a slash.
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            tag="pr-${GITHUB_REF_NAME%%/*}"
+          elif [ "$GITHUB_REF_NAME" = "main" ]; then
+            tag="latest"
+          else
+            tag="$GITHUB_REF_NAME"
+          fi
+          echo "tag=$(printf '%s' "$tag" | tr -c 'A-Za-z0-9_.-' '-')" >> "$GITHUB_OUTPUT"
+
+      # Pull requests build only; pushes to main publish to GHCR.
+      - name: Log in to GHCR
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: useblacksmith/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          build-args: WRANGLER_VERSION=${{ steps.meta.outputs.wrangler }}
+          push: ${{ github.event_name == 'push' }}
+          load: ${{ github.event_name != 'push' }}
+          tags: |
+            ${{ steps.meta.outputs.image }}:${{ github.sha }}
+            ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}

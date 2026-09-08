@@ -23,4 +23,9 @@ describe("isSiteverifyAcceptable", () => {
     const result = { success: true, action: "rsvp", hostname: "evil.example.com" };
     expect(isSiteverifyAcceptable(result, { action: "rsvp", hostnames })).toBe(false);
   });
+
+  it("rejects a response missing a hostname by falling back to an empty string", () => {
+    const result = { success: true, action: "rsvp" };
+    expect(isSiteverifyAcceptable(result, { action: "rsvp", hostnames })).toBe(false);
+  });
 });

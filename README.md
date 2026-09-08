@@ -191,7 +191,42 @@ Migration SQL files live in `drizzle/`.
 | `preview` | `build:cf + wrangler dev` | Local Workers preview (port 8787, full bindings) |
 | `deploy` | `build:cf + wrangler deploy` | Deploy to Cloudflare Workers |
 | `cf-typegen` | `wrangler types ...` | Regenerate `cloudflare-env.d.ts` |
-| `test` | `vitest run` | Run unit tests (20 tests) |
+| `lint` | `eslint` | Lint the project |
+| `typecheck` | `tsc --noEmit` | Type-check without emitting |
+| `test` | `vitest run` | Unit + component tests |
+| `test:watch` | `vitest` | Same suite in watch mode |
+| `test:coverage` | `vitest run --coverage` | Same suite, fails below 100% coverage |
+| `e2e` | `playwright test` | End-to-end suite (boots `next dev` on port 8787) |
+| `e2e:setup` | `wrangler d1 migrations apply ... --local` | Prepare the local D1 for e2e |
+| `e2e:install` | `playwright install ...` | One-time Chromium download |
+
+---
+
+## Testing & CI
+
+Unit and component tests run under Vitest with a **100% coverage gate** (lines,
+branches, functions, statements). End-to-end journeys run under Playwright against
+`next dev` with local Cloudflare bindings.
+
+```bash
+npm run test:coverage      # unit + component, enforces the coverage gate
+npm run e2e:setup          # once: apply D1 migrations to local Miniflare state
+npm run e2e:install        # once: download Chromium
+npm run e2e                # end-to-end journeys
+```
+
+See [docs/testing.md](docs/testing.md) for the test layout and the Worker-binding
+fakes.
+
+GitHub Actions (`.github/workflows/ci.yml`) runs four jobs on every push and pull
+request: lint + typecheck, unit tests with the coverage gate, the Playwright
+suite, and a Docker build of the deploy image using Blacksmith's
+`setup-docker-builder` and `build-push-action`. Pull requests build the image
+only; pushes to `main` publish it to GHCR.
+
+The image in `Dockerfile` is a **deploy artifact**, not a runtime server: the app
+runs on Cloudflare Workers, so the image carries the built OpenNext bundle plus a
+pinned wrangler and its entrypoint is `wrangler deploy`.
 
 ---
 
