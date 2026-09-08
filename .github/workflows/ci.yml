@@ -110,6 +110,16 @@ jobs:
         run: |
           echo "image=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
           echo "wrangler=$(node -p "require('./package.json').devDependencies.wrangler.replace(/^\^/, '')")" >> "$GITHUB_OUTPUT"
+          # On a pull request GITHUB_REF_NAME is "<number>/merge", and a Docker
+          # tag may not contain a slash.
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            tag="pr-${GITHUB_REF_NAME%%/*}"
+          elif [ "$GITHUB_REF_NAME" = "main" ]; then
+            tag="latest"
+          else
+            tag="$GITHUB_REF_NAME"
+          fi
+          echo "tag=$(printf '%s' "$tag" | tr -c 'A-Za-z0-9_.-' '-')" >> "$GITHUB_OUTPUT"
 
       # Pull requests build only; pushes to main publish to GHCR.
       - name: Log in to GHCR
@@ -131,4 +141,4 @@ jobs:
           load: ${{ github.event_name != 'push' }}
           tags: |
             ${{ steps.meta.outputs.image }}:${{ github.sha }}
-            ${{ steps.meta.outputs.image }}:${{ github.ref_name == 'main' && 'latest' || github.ref_name }}
+            ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
